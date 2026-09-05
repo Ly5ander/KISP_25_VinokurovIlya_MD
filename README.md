@@ -10,10 +10,10 @@
 2. Создать репозиторий для предмета РазрМобильПрилож
 
 **Пример:**
-    -KISP_25_FedorovDuluur_MD
-gi
-    -KISP_24_1_FedorovDuluur_MD
-
+    
+    - KISP_25_FedorovDuluur_MD
+    
+    - KISP_24_1_FedorovDuluur_MD
 3. Клонировать репозиторий к себе на компьютер -
 
 ``` git clone ссылка на репозиторий тип https```
