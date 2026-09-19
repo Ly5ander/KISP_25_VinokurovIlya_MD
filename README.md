@@ -37,6 +37,26 @@
 
 **Expo Go** — мобильное приложение-песочница для мгновенного тестирования кода на реальном устройстве через QR-код без локальной настройки Android Studio/Xcode.
 
+import { StyleSheet, Text, View } from 'react-native';
+
+export default function Index() {
+  return (
+    <View style={styles.container}>
+      <Text>Hello world!</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+
+
 ## 2. Create your first app (Создание первого приложения)
 
 **Инициализация:** Проект создается командой *npx create-expo-app@latest*.
@@ -45,7 +65,151 @@
 
 **Архитектура:** По умолчанию современный шаблон создает структуру папки *src/app* для файлового роутинга.
 
+1. Импорт *StyleSheet* от *react-native* и создать a *styles* Возражает, чтобы определить наши пользовательские стили.
+2. Добавить a *styles.container.backgroundColor* собственность для *View* с ценностью #25292e. Это меняет цвет фона.
+3. Заменить значение по умолчанию *Text* с "Домашний экран".
+4. Добавить a *styles.text.color* собственность для *Text* с ценностью #fff (белый) для изменения цвета текста.
+
+import { Text, View,  StyleSheet } from 'react-native';
+
+export default function Index() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>Home screen</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    color: '#fff',
+  },
+});
+
+
 ## 3. Add navigation (Добавление навигации)
+
+### Добавить новый экран в стек
+import { Text, View, StyleSheet } from 'react-native';
+
+export default function AboutScreen() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>About screen</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    color: '#fff',
+  },
+});
+
+1. Добавить a *Stack.Screen /* Компонент и a *options* реквизит для обновления заголовка */about* Маршрут.
+2. Обновить */index* Название маршрута на *Home* путем добавления *options* Прокв.
+
+import { Stack } from 'expo-router';
+
+export default function RootLayout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" options={{ title: 'Home' }} />
+      <Stack.Screen name="about" options={{ title: 'About' }} />
+    </Stack>
+  );
+}
+
+
+### Навигация между экранами
+
+1. Импортировать Link компонент из expo-router внутри src/app/index.tsx.
+2. Добавить a Link компонент после Text компонент и пропуск href реквизит с /about Маршрут.
+3. Добавить стиль fontSize, textDecorationLine, и color к Link компонент. Он принимает тот же реквизит, что и *Text* компонент.
+
+import { Text, View, StyleSheet } from 'react-native';
+ import { Link } from 'expo-router'; 
+
+export default function Index() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>Home screen</Text>
+      <Link href="/about" style={styles.button}>
+        Go to About screen
+      </Link>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    color: '#fff',
+  },
+  button: {
+    fontSize: 20,
+    textDecorationLine: 'underline',
+    color: '#fff',
+  },
+});
+
+
+### Добавить не найденный маршрут
+
+1. Создать новый файл с именем +not-found.tsx внутри src/приложение Каталог для добавления NotFoundScreen компонент.
+2. Добавить options реквизит от Stack.Screen для отображения пользовательского заголовка экрана для этого маршрута.
+3. Добавить a Link Компонент для перехода к / Маршрут, который является нашим запасным маршрутом.
+
+import { View, StyleSheet } from 'react-native';
+import { Link, Stack } from 'expo-router';
+
+export default function NotFoundScreen() {
+  return (
+    <>
+      <Stack.Screen options={{ title: 'Oops! Not Found' }} />
+      <View style={styles.container}>
+        <Link href="/" style={styles.button}>
+          Go back to Home screen!
+        </Link>
+      </View>
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  button: {
+    fontSize: 20,
+    textDecorationLine: 'underline',
+    color: '#fff',
+  },
+});
+
+
+
 
 **Expo Router:** Файловая система определяет экраны (файл *index.tsx* равен пути */*).
 
