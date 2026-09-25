@@ -31,255 +31,321 @@
 
 # Конспект Expo tutorial
 
-## 1. Introduction (Введение)
+1. Инициализация и настройка окружения (Introduction & Create your first app)
 
-**Expo** — это экосистема поверх React Native, упрощающая создание, сборку и развертывание кроссплатформенных приложений (Android, iOS, Web) из единой кодовой базы.
+**Шаг 1. Создание проекта и развертывание Expo SDK**
 
-**Expo Go** — мобильное приложение-песочница для мгновенного тестирования кода на реальном устройстве через QR-код без локальной настройки Android Studio/Xcode.
+Для развертывания базового шаблона на TypeScript и установки всех необходимых нативных модулей выполните в терминале следующие команды:
 
-import { StyleSheet, Text, View } from 'react-native';
+## Инициализация структуры проекта
+npx create-expo-app@latest StickerSmash --template blank-typescript
+cd StickerSmash
 
-export default function Index() {
-  return (
-    <View style={styles.container}>
-      <Text>Hello world!</Text>
-    </View>
-  );
-}
+## Установка зависимостей Expo SDK для работы с медиа, жестами и графикой
+npx expo install expo-image-picker react-native-gesture-handler react-native-reanimated react-native-view-shot expo-media-library expo-status-bar
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+**Шаг 2. Запуск локального сервера**
+npx expo start
 
+Перенесите разработку на физическое устройство: отсканируйте появившийся QR-код через мобильное приложение **Expo Go**.
 
-## 2. Create your first app (Создание первого приложения)
+2. Архитектура файловой навигации (Add navigation)
 
-**Инициализация:** Проект создается командой *npx create-expo-app@latest*.
+Вся маршрутизация приложения строится на структуре каталогов внутри папки src/app/.
 
-**Запуск сервера:** Команда *npx expo start* поднимает Metro Bundler и выводит QR-код в терминал.
+**Корневой файл компоновки** (src/app/_layout.tsx)
 
-**Архитектура:** По умолчанию современный шаблон создает структуру папки *src/app* для файлового роутинга.
-
-1. Импорт *StyleSheet* от *react-native* и создать a *styles* Возражает, чтобы определить наши пользовательские стили.
-2. Добавить a *styles.container.backgroundColor* собственность для *View* с ценностью #25292e. Это меняет цвет фона.
-3. Заменить значение по умолчанию *Text* с "Домашний экран".
-4. Добавить a *styles.text.color* собственность для *Text* с ценностью #fff (белый) для изменения цвета текста.
-
-import { Text, View,  StyleSheet } from 'react-native';
-
-export default function Index() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Home screen</Text>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#25292e',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  text: {
-    color: '#fff',
-  },
-});
-
-
-## 3. Add navigation (Добавление навигации)
-
-### Добавить новый экран в стек
-import { Text, View, StyleSheet } from 'react-native';
-
-export default function AboutScreen() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>About screen</Text>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#25292e',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  text: {
-    color: '#fff',
-  },
-});
-
-1. Добавить a *Stack.Screen /* Компонент и a *options* реквизит для обновления заголовка */about* Маршрут.
-2. Обновить */index* Название маршрута на *Home* путем добавления *options* Прокв.
+Инициализирует контекст обработки жестов, настраивает глобальный статус-бар (**Configure status bar**) и стек экранов.
 
 import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function RootLayout() {
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ title: 'Home' }} />
-      <Stack.Screen name="about" options={{ title: 'About' }} />
-    </Stack>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="+not-found" />
+      </Stack>
+      <StatusBar style="light" />
+    </GestureHandlerRootView>
   );
 }
 
+**Компоновка нижнего меню** (src/app/(tabs)/_layout.tsx)
 
-### Навигация между экранами
+Управляет переключением между вкладками при помощи встроенного компонента Tabs.
 
-1. Импортировать Link компонент из expo-router внутри src/app/index.tsx.
-2. Добавить a Link компонент после Text компонент и пропуск href реквизит с /about Маршрут.
-3. Добавить стиль fontSize, textDecorationLine, и color к Link компонент. Он принимает тот же реквизит, что и *Text* компонент.
+import { Tabs } from 'expo-router';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
-import { Text, View, StyleSheet } from 'react-native';
- import { Link } from 'expo-router'; 
-
-export default function Index() {
+export default function TabLayout() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Home screen</Text>
-      <Link href="/about" style={styles.button}>
-        Go to About screen
-      </Link>
+    <Tabs screenOptions={{ 
+      tabBarActiveTintColor: '#ffd33d',
+      headerStyle: { backgroundColor: '#25292e' },
+      headerShadowVisible: false,
+      headerTintColor: '#fff',
+      tabBarStyle: { backgroundColor: '#25292e' },
+    }}>
+      <Tabs.Screen name="index" options={{
+        title: 'Home',
+        tabBarIcon: ({ color, focused }) => (
+          <Ionicons name={focused ? 'home-sharp' : 'home-outline'} color={color} size={24} />
+        ),
+      }} />
+      <Tabs.Screen name="about" options={{
+        title: 'About',
+        tabBarIcon: ({ color, focused }) => (
+          <Ionicons name={focused ? 'information-circle-sharp' : 'information-circle-outline'} color={color} size={24} />
+        ),
+      }} />
+    </Tabs>
+  );
+}
+
+3. Кастомные компоненты интерфейса (Create a modal)
+
+**Универсальный компонент кнопки** (src/components/Button.tsx)
+
+
+|Параметр (Prop)|Тип данных|Описание и поведение|
+|---|---|---|
+|`label`|`string`|Текст, отображаемый внутри кнопки|
+|`theme`|`'primary' \| undefined`|Если выбран `primary` — кнопка становится белой с желтой рамкой|
+|`onPress`|`() => void`|Функция-обработчик, срабатывающая при тапе по кнопке|
+
+
+import { StyleSheet, View, Pressable, Text } from 'react-native';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+
+type Props = { label: string; theme?: 'primary'; onPress?: () => void; };
+
+export default function Button({ label, theme, onPress }: Props) {
+  if (theme === 'primary') {
+    return (
+      <View style={[styles.buttonContainer, { borderWidth: 4, borderColor: '#ffd33d', borderRadius: 18 }]}>
+        <Pressable style={[styles.button, { backgroundColor: '#fff' }]} onPress={onPress}>
+          <FontAwesome name="picture-o" size={18} color="#25292e" style={styles.buttonIcon} />
+          <Text style={[styles.buttonLabel, { color: '#25292e' }]}>{label}</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.buttonContainer}>
+      <Pressable style={styles.button} onPress={onPress}>
+        <Text style={styles.buttonLabel}>{label}</Text>
+      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#25292e',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  text: {
-    color: '#fff',
-  },
-  button: {
-    fontSize: 20,
-    textDecorationLine: 'underline',
-    color: '#fff',
-  },
+  buttonContainer: { width: 320, height: 68, marginHorizontal: 20, alignItems: 'center', justifyContent: 'center', padding: 3 },
+  button: { borderRadius: 10, width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', flexDirection: 'row' },
+  buttonIcon: { paddingRight: 8 },
+  buttonLabel: { color: '#fff', fontSize: 16 },
 });
 
+**Модальное окно выбора стикеров** (src/components/EmojiPicker.tsx)
 
-### Добавить не найденный маршрут
+import { Modal, View, Text, Pressable, StyleSheet } from 'react-native';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-1. Создать новый файл с именем +not-found.tsx внутри src/приложение Каталог для добавления NotFoundScreen компонент.
-2. Добавить options реквизит от Stack.Screen для отображения пользовательского заголовка экрана для этого маршрута.
-3. Добавить a Link Компонент для перехода к / Маршрут, который является нашим запасным маршрутом.
+type Props = { isVisible: boolean; onClose: () => void; children: React.ReactNode; };
 
-import { View, StyleSheet } from 'react-native';
-import { Link, Stack } from 'expo-router';
-
-export default function NotFoundScreen() {
+export default function EmojiPicker({ isVisible, onClose, children }: Props) {
   return (
-    <>
-      <Stack.Screen options={{ title: 'Oops! Not Found' }} />
-      <View style={styles.container}>
-        <Link href="/" style={styles.button}>
-          Go back to Home screen!
-        </Link>
+    <Modal animationType="slide" transparent={true} visible={isVisible}>
+      <View style={styles.modalContent}>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>Choose a sticker</Text>
+          <Pressable onPress={onClose}>
+            <MaterialIcons name="close" color="#fff" size={22} />
+          </Pressable>
+        </View>
+        {children}
       </View>
-    </>
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#25292e',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  modalContent: { height: '35%', width: '100%', backgroundColor: '#25292e', borderTopLeftRadius: 18, borderTopRightRadius: 18, position: 'absolute', bottom: 0 },
+  titleContainer: { height: '16%', backgroundColor: '#464c55', borderTopLeftRadius: 18, borderTopRightRadius: 18, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  title: { color: '#fff', fontSize: 16 },
+});
+4. Интеграция жестов и анимации (Add gestures)
 
-  button: {
-    fontSize: 20,
-    textDecorationLine: 'underline',
-    color: '#fff',
-  },
+**Поддерживаемые типы жестов в EmojiSticker.tsx**
+
+
+|Жест|Метод библиотеки|Вызываемый эффект в приложении|
+|---|---|---|
+|**Двойной тап**|`Gesture.Tap().numberOfTaps(2)`|Увеличивает размер стикера в 2 раза или возвращает к исходному|
+|**Перетаскивание (Pan)**|`Gesture.Pan()`|Свободно перемещает стикер по координатной сетке `X` и `Y`|
+
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+
+type Props = { imageSize: number; stickerSource: any; };
+
+export default function EmojiSticker({ imageSize, stickerSource }: Props) {
+  const scaleImage = useSharedValue(imageSize);
+  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
+
+  const doubleTap = Gesture.Tap().numberOfTaps(2).onStart(() => {
+    scaleImage.value = scaleImage.value !== imageSize * 2 ? imageSize * 2 : imageSize;
+  });
+
+  const dragGesture = Gesture.Pan().onChange((event) => {
+    translateX.value += event.changeX;
+    translateY.value += event.changeY;
+  });
+
+  const containerStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }, { translateY: translateY.value }],
+  }));
+
+  const imageStyle = useAnimatedStyle(() => ({
+    width: withSpring(scaleImage.value),
+    height: withSpring(scaleImage.value),
+  }));
+
+  return (
+    <GestureDetector gesture={dragGesture}>
+      <Animated.View style={[containerStyle, { top: -350, position: 'absolute' }]}>
+        <GestureDetector gesture={doubleTap}>
+          <Animated.Image source={stickerSource} resizeMode="contain" style={imageStyle} />
+        </GestureDetector>
+      </Animated.View>
+    </GestureDetector>
+  );
+}
+5. Сборка экрана, галерея и скриншоты (Build a screen, Use an image picker, Take a screenshot & Handle platform differences)
+
+Файл src/app/(tabs)/index.tsx связывает интерфейс, логику expo-image-picker и сохранение готового коллажа через react-native-view-shot. С помощью свойства Platform.OS распределяется логика работы приложения в зависимости от платформы запуска:
+
+|Платформа запуска|Поведение функции сохранения `onSaveImageAsync`|
+|---|---|
+|**iOS / Android**|Запрашивается доступ, делается снимок экрана через `captureRef` и файл записывается в нативную галерею устройства|
+|**Web (Браузер)**|Выводится предупреждение (нативный доступ к галереям мобильных ОС из браузера закрыт из соображений безопасности)|
+
+import { useState, useRef } from 'react';
+import { View, StyleSheet, Platform, Image } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import * as MediaLibrary from 'expo-media-library';
+import { captureRef } from 'react-native-view-shot';
+
+import Button from '@/components/Button';
+import EmojiPicker from '@/components/EmojiPicker';
+import EmojiSticker from '@/components/EmojiSticker';
+
+const PlaceholderImage = require('@/assets/images/background-image.png');
+
+export default function Index() {
+  const imageRef = useRef<View>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [pickedEmoji, setPickedEmoji] = useState<any>(null);
+  const [status, requestPermission] = MediaLibrary.usePermissions();
+
+  if (status === null) { requestPermission(); }
+
+  const pickImageAsync = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setSelectedImage(result.assets.uri);
+      setShowAppOptions(true);
+    }
+  };
+
+  const onSaveImageAsync = async () => {
+    if (Platform.OS !== 'web') {
+      try {
+        const localUri = await captureRef(imageRef, { height: 440, quality: 1 });
+        await MediaLibrary.saveToLibraryAsync(localUri);
+        if (localUri) alert('Saved successfully!');
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      alert('Saving screenshots directly to gallery is not supported on Web.');
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <View ref={imageRef} collapsable={false} style={styles.imageContainer}>
+        <Image source={selectedImage ? { uri: selectedImage } : PlaceholderImage} style={styles.image} />
+        {pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />}
+      </View>
+
+      {showAppOptions ? (
+        <View style={styles.optionsContainer}>
+          <Button label="Choose a sticker" onPress={() => setIsModalVisible(true)} />
+          <Button theme="primary" label="Save Photo" onPress={onSaveImageAsync} />
+        </View>
+      ) : (
+        <View style={styles.footerContainer}>
+          <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
+          <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
+        </View>
+      )}
+
+      <EmojiPicker isVisible={isModalVisible} onClose={() => setIsModalVisible(false)}>
+        {/* Сюда импортируется FlatList со списком доступных смайликов */}
+      </EmojiPicker>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#25292e', alignItems: 'center' },
+  imageContainer: { flex: 1, paddingTop: 58 },
+  image: { width: 320, height: 440, borderRadius: 18 },
+  footerContainer: { flex: 1 / 3, alignItems: 'center' },
+  optionsContainer: { flex: 1 / 3, justifyContent: 'center', alignItems: 'center' },
 });
 
+6. Системный манифест приложения (Configure status bar, splash screen and app icon)
 
+Глобальный файл app.json содержит метаданные проекта.
+{
+  "expo": {
+    "name": "StickerSmash",
+    "slug": "StickerSmash",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/images/splash-screen.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#25292e"
+    },
+    "ios": { "supportsTablet": true },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#25292e"
+      }
+    },
+    "web": { "favicon": "./assets/images/favicon.png" }
+  }
+}
 
+7. Дополнительные ресурсы (Learning resources)
+Для углубления в экосистему Expo изучите следующие направления:
+**EAS Build** —  инструмент облачной компиляции нативных установочных пакетов под iOS (.ipa) и Android (.apk).
 
-**Expo Router:** Файловая система определяет экраны (файл *index.tsx* равен пути */*).
-
-**Stack Navigator:** Организует навигацию по принципу стопки карт (*Stack*). Каждый новый экран открывается поверх предыдущего свайпом или анимацией.
-
-**Tab Navigator:** Реализует нижнюю панель вкладок. Для группировки папка оборачивается в круглые скобки (*tabs*), чтобы исключить её название из адресной строки URL.
-
-**Компонент** *Link*: Используется для перехода: *Link href="/about">Перейти</Link*.
-
-**404:** Файл *+not-found.tsx* перехватывает любые несуществующие маршруты.
-
-## 4. Build a screen (Создание экрана)
-
-**Базовые UI-компоненты:**
-*View* — контейнер-блок (аналог *div* в веб-разработке).
-*Text* — текстовый компонент (любая строка обязана быть внутри него).
-*Pressable* или *TouchableOpacity* — компоненты-обертки для обработки нажатий.
-
-**Стилизация:** Используется встроенный *StyleSheet.create()*. Стили основаны на модели **Flexbox**, где направление по умолчанию выставлено как *flexDirection:* *'column'* (вертикально).
-
-## 5. Use an image picker (Использование Image Picker)
-
-**Библиотека:** *expo-image-picker*.
-
-**Доступ к галерее:** Требует асинхронного запроса разрешений у операционной системы: *typescriptconst [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();*
-
-**Выбор фото:** Метод *launchImageLibraryAsync()* открывает системную галерею и возвращает объект с URI выбранного изображения для последующего отображения в компоненте *Image*.
-
-## 6. Create a modal (Создание модального окна)
-
-**Компонент *Modal*:** Стандартный компонент React Native для всплывающих окон поверх основного интерфейса.
-
-**Управление:** Состояние видимости контролируется через логический стейт (например, *const [isVisible, setIsVisible] = useState(false))*.
-
-**Свойства:** Атрибут *animationType="slide"* задает анимацию появления снизу, а *transparent={true}* позволяет делать полупрозрачный размытый или затемненный фон.
-
-## 7. Add gestures (Добавление жестов)
-
-**Инструментарий:** *react-native-gesture-handler* и *react-native-reanimated*.
-
-**Связка компонентов:** Для работы жестов все приложение необходимо обернуть в *GestureHandlerRootView*.
-
-**Реализация:** Компоненты вроде *PanGestureHandler* (для перетаскивания) или *TapGestureHandler* (для тапов) отслеживают координаты пальца, а Reanimated плавно обновляет положение объекта в обход основного потока JavaScript.
-
-## 8. Take a screenshot (Создание скриншота)
-
-**Библиотека:** *react-native-view-shot*.
-
-**Принцип действия:** Компонент захватывает переданную область интерфейса (через *ref*) и конвертирует её в локальную ссылку-изображение (URI).
-
-**Сохранение в галерею:** Полученный URI передается в модуль *expo-media-library* с помощью функции *MediaLibrary.saveToLibraryAsync(localUri)*.
-
-## 9. Handle platform differences (Обработка межплатформенных различий)
-
-**Модуль** *Platform:* Позволяет писать разветвления в коде в зависимости от ОС: *typescriptconst padding = Platform.OS === 'ios' ? 20 : 10;*
-
-**Расширения файлов:** Metro автоматически выберет нужный файл, если дать ему специфичное расширение: *Button.ios.tsx*, *Button.android.tsx* или *Button.web.tsx.*
-
-## 10. Configure status bar, splash screen and app icon (Настройка системных элементов)
-
-**Status Bar:** Компонент *StatusBar style="light" /* управляет цветом системных иконок (время, батарея) в верхней части экрана.
-
-**Конфигурация** (*app.json*): Глобальный файл настроек проекта, где задаются:
-*icon* — квадратная иконка приложения (1024x1024px).
-*splash* — параметры экрана загрузки (фоновый цвет и логотип).
-*adaptiveIcon* — специфические настройки адаптивных иконок для Android.
-
-## 11. Learning resources (Ресурсы для обучения)
-
-**Дальнейшие шаги:**
-Изучение **EAS (Expo Application Services)** для облачной сборки бинарников (*.apk*, *.aab*, *.ipa*) без наличия macOS.
-Работа с нативными модулями через конфигурационные плагины (Config Plugins).
-Интеграция с базами данных (SQLite, Firebase, Supabase).
+**Разделение платформенного кода** — углубленная работа с расширениями файлов для гибкой кастомизации под веб-интерфейсы (.web.tsx).
