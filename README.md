@@ -31,25 +31,33 @@
 
 # Конспект Expo tutorial
 
-1. Инициализация и настройка окружения (Introduction & Create your first app)
+## Инициализация и настройка окружения (Introduction & Create your first app)
 
 **Шаг 1. Создание проекта и развертывание Expo SDK**
 
 Для развертывания базового шаблона на TypeScript и установки всех необходимых нативных модулей выполните в терминале следующие команды:
 
 ## Инициализация структуры проекта
+```bash
 npx create-expo-app@latest StickerSmash --template blank-typescript
 cd StickerSmash
+```
 
 ## Установка зависимостей Expo SDK для работы с медиа, жестами и графикой
+
+```bash
 npx expo install expo-image-picker react-native-gesture-handler react-native-reanimated react-native-view-shot expo-media-library expo-status-bar
+```
 
 **Шаг 2. Запуск локального сервера**
+
+```bash
 npx expo start
+```
 
 Перенесите разработку на физическое устройство: отсканируйте появившийся QR-код через мобильное приложение **Expo Go**.
 
-2. Архитектура файловой навигации (Add navigation)
+## Архитектура файловой навигации (Add navigation)
 
 Вся маршрутизация приложения строится на структуре каталогов внутри папки src/app/.
 
@@ -57,6 +65,7 @@ npx expo start
 
 Инициализирует контекст обработки жестов, настраивает глобальный статус-бар (**Configure status bar**) и стек экранов.
 
+```tsx
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -72,11 +81,13 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
+```
 
 **Компоновка нижнего меню** (src/app/(tabs)/_layout.tsx)
 
 Управляет переключением между вкладками при помощи встроенного компонента Tabs.
 
+```tsx
 import { Tabs } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -104,11 +115,11 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+```
 
-3. Кастомные компоненты интерфейса (Create a modal)
+## Кастомные компоненты интерфейса (Create a modal)
 
 **Универсальный компонент кнопки** (src/components/Button.tsx)
-
 
 |Параметр (Prop)|Тип данных|Описание и поведение|
 |---|---|---|
@@ -116,7 +127,7 @@ export default function TabLayout() {
 |`theme`|`'primary' \| undefined`|Если выбран `primary` — кнопка становится белой с желтой рамкой|
 |`onPress`|`() => void`|Функция-обработчик, срабатывающая при тапе по кнопке|
 
-
+```tsx
 import { StyleSheet, View, Pressable, Text } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
@@ -149,9 +160,11 @@ const styles = StyleSheet.create({
   buttonIcon: { paddingRight: 8 },
   buttonLabel: { color: '#fff', fontSize: 16 },
 });
+```
 
 **Модальное окно выбора стикеров** (src/components/EmojiPicker.tsx)
 
+```tsx
 import { Modal, View, Text, Pressable, StyleSheet } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
@@ -178,7 +191,9 @@ const styles = StyleSheet.create({
   titleContainer: { height: '16%', backgroundColor: '#464c55', borderTopLeftRadius: 18, borderTopRightRadius: 18, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   title: { color: '#fff', fontSize: 16 },
 });
-4. Интеграция жестов и анимации (Add gestures)
+```
+
+## Интеграция жестов и анимации (Add gestures)
 
 **Поддерживаемые типы жестов в EmojiSticker.tsx**
 
@@ -188,6 +203,8 @@ const styles = StyleSheet.create({
 |**Двойной тап**|`Gesture.Tap().numberOfTaps(2)`|Увеличивает размер стикера в 2 раза или возвращает к исходному|
 |**Перетаскивание (Pan)**|`Gesture.Pan()`|Свободно перемещает стикер по координатной сетке `X` и `Y`|
 
+
+```tsx
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
@@ -226,7 +243,10 @@ export default function EmojiSticker({ imageSize, stickerSource }: Props) {
     </GestureDetector>
   );
 }
-5. Сборка экрана, галерея и скриншоты (Build a screen, Use an image picker, Take a screenshot & Handle platform differences)
+```
+
+
+## Сборка экрана, галерея и скриншоты (Build a screen, Use an image picker, Take a screenshot & Handle platform differences)
 
 Файл src/app/(tabs)/index.tsx связывает интерфейс, логику expo-image-picker и сохранение готового коллажа через react-native-view-shot. С помощью свойства Platform.OS распределяется логика работы приложения в зависимости от платформы запуска:
 
@@ -235,6 +255,7 @@ export default function EmojiSticker({ imageSize, stickerSource }: Props) {
 |**iOS / Android**|Запрашивается доступ, делается снимок экрана через `captureRef` и файл записывается в нативную галерею устройства|
 |**Web (Браузер)**|Выводится предупреждение (нативный доступ к галереям мобильных ОС из браузера закрыт из соображений безопасности)|
 
+```tsx
 import { useState, useRef } from 'react';
 import { View, StyleSheet, Platform, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -316,10 +337,13 @@ const styles = StyleSheet.create({
   footerContainer: { flex: 1 / 3, alignItems: 'center' },
   optionsContainer: { flex: 1 / 3, justifyContent: 'center', alignItems: 'center' },
 });
+```
 
-6. Системный манифест приложения (Configure status bar, splash screen and app icon)
+## Системный манифест приложения (Configure status bar, splash screen and app icon)
 
 Глобальный файл app.json содержит метаданные проекта.
+
+```json
 {
   "expo": {
     "name": "StickerSmash",
@@ -333,19 +357,26 @@ const styles = StyleSheet.create({
       "resizeMode": "contain",
       "backgroundColor": "#25292e"
     },
-    "ios": { "supportsTablet": true },
+    "ios": { 
+      "supportsTablet": true 
+    },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#25292e"
       }
     },
-    "web": { "favicon": "./assets/images/favicon.png" }
+    "web": { 
+      "favicon": "./assets/images/favicon.png" 
+    }
   }
 }
+```
 
-7. Дополнительные ресурсы (Learning resources)
+## Дополнительные ресурсы (Learning resources)
+
 Для углубления в экосистему Expo изучите следующие направления:
+
 **EAS Build** —  инструмент облачной компиляции нативных установочных пакетов под iOS (.ipa) и Android (.apk).
 
 **Разделение платформенного кода** — углубленная работа с расширениями файлов для гибкой кастомизации под веб-интерфейсы (.web.tsx).
