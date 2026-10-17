@@ -1,6 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
-// Импортируем набор иконок FontAwesome
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 const PlaceholderImage = { uri: 'https://expo.dev' };
@@ -8,24 +7,38 @@ const PlaceholderImage = { uri: 'https://expo.dev' };
 export default function App() {
   return (
     <View style={styles.container}>
-      <View style={styles.imageContainer}>
-        <Image source={PlaceholderImage} style={styles.image} />
+      {/* Основной контент экрана */}
+      <View style={styles.contentContainer}>
+        <View style={styles.imageContainer}>
+          <Image source={PlaceholderImage} style={styles.image} />
+        </View>
+
+        <View style={styles.footerContainer}>
+          <View style={[styles.buttonContainer, { borderWidth: 4, borderColor: '#ffd33d', borderRadius: 18 }]}>
+            <Pressable style={[styles.button, { backgroundColor: '#fff' }]} onPress={() => alert('Вы нажали кнопку выбора фото.')}>
+              <FontAwesome name="picture-o" size={18} color="#25292e" style={styles.buttonIcon} />
+              <Text style={[styles.buttonLabel, { color: '#25292e' }]}>Choose a photo</Text>
+            </Pressable>
+          </View>
+
+          <View style={styles.buttonContainer}>
+            <Pressable style={styles.button} onPress={() => alert('Вы нажали использовать это фото.')}>
+              <Text style={styles.buttonLabel}>Use this photo</Text>
+            </Pressable>
+          </View>
+        </View>
       </View>
 
-      <View style={styles.footerContainer}>
-        {/* Кнопка с иконкой */}
-        <View style={[styles.buttonContainer, { borderWidth: 4, borderColor: '#ffd33d', borderRadius: 18 }]}>
-          <Pressable style={[styles.button, { backgroundColor: '#fff' }]} onPress={() => alert('Вы нажали кнопку выбора фото.')}>
-            <FontAwesome name="picture-o" size={18} color="#25292e" style={styles.buttonIcon} />
-            <Text style={[styles.buttonLabel, { color: '#25292e' }]}>Choose a photo</Text>
-          </Pressable>
-        </View>
-
-        <View style={styles.buttonContainer}>
-          <Pressable style={styles.button} onPress={() => alert('Вы нажали использовать это фото.')}>
-            <Text style={styles.buttonLabel}>Use this photo</Text>
-          </Pressable>
-        </View>
+      {/* Панель навигации (Раздел: Add navigation) */}
+      <View style={styles.navigationBar}>
+        <Pressable style={styles.navItem}>
+          <FontAwesome name="home" size={24} color="#ffd33d" />
+          <Text style={[styles.navLabel, { color: '#ffd33d' }]}>Home</Text>
+        </Pressable>
+        <Pressable style={styles.navItem}>
+          <FontAwesome name="gear" size={24} color="#a1a1a1" />
+          <Text style={styles.navLabel}>Settings</Text>
+        </Pressable>
       </View>
 
       <StatusBar style="auto" />
@@ -37,25 +50,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#25292e',
+  },
+  contentContainer: {
+    flex: 1,
     alignItems: 'center',
   },
   imageContainer: {
     flex: 1,
-    paddingTop: 58,
+    paddingTop: 40,
   },
   image: {
     width: 320,
-    height: 440,
+    height: 400,
     borderRadius: 18,
   },
   footerContainer: {
-    flex: 1 / 3,
+    paddingBottom: 20,
     alignItems: 'center',
   },
   buttonContainer: {
     width: 320,
-    height: 68,
-    marginHorizontal: 20,
+    height: 50,
+    marginVertical: 6,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 3,
@@ -74,5 +90,23 @@ const styles = StyleSheet.create({
   buttonLabel: {
     color: '#fff',
     fontSize: 16,
+  },
+  /* Стили для навигации */
+  navigationBar: {
+    height: 70,
+    flexDirection: 'row',
+    borderTopWidth: 1,
+    borderTopColor: '#383e46',
+    backgroundColor: '#1f2226',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  navItem: {
+    alignItems: 'center',
+  },
+  navLabel: {
+    color: '#a1a1a1',
+    fontSize: 12,
+    marginTop: 4,
   },
 });
