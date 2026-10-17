@@ -1,8 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
+import { StyleSheet, Text, View, Pressable, Image } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
-const PlaceholderImage = { uri: 'https://expo.dev' };
+// Встроенная base64-картинка (сработает локально без интернета)
+const PlaceholderImage = { uri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQAQMAAAD2wOWNAAAABlBMVEUAAAD///+l2Z/dAAAAMklEQVR4nGNgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgAMgAByN9E8YAAAAASUVORK5CYII=' };
 
 export default function App() {
   return (
@@ -29,7 +30,7 @@ export default function App() {
         </View>
       </View>
 
-      {/* Панель навигации (Раздел: Add navigation) */}
+      {/* Панель навигации */}
       <View style={styles.navigationBar}>
         <Pressable style={styles.navItem}>
           <FontAwesome name="home" size={24} color="#ffd33d" />
@@ -58,11 +59,13 @@ const styles = StyleSheet.create({
   imageContainer: {
     flex: 1,
     paddingTop: 40,
+    justifyContent: 'center',
   },
   image: {
     width: 320,
     height: 400,
     borderRadius: 18,
+    backgroundColor: '#3a3f47', // Серый фон, чтобы заглушку было видно в веб-версии
   },
   footerContainer: {
     paddingBottom: 20,
@@ -91,7 +94,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
   },
-  /* Стили для навигации */
   navigationBar: {
     height: 70,
     flexDirection: 'row',
