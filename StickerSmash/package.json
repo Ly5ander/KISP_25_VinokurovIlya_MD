@@ -1,11 +1,12 @@
 {
   "name": "stickersmash",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "expo-router/entry",
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
     "expo": "~58.0.14",
     "expo-image-picker": "~58.0.10",
+    "expo-router": "~58.0.24",
     "expo-status-bar": "~58.0.3",
     "react": "19.3.0",
     "react-dom": "19.3.0",
