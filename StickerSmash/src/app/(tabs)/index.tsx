@@ -1,8 +1,8 @@
 import { useState, useRef } from 'react';
 import { StyleSheet, View, Image, Text } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import ImagePicker from 'expo-image-picker';
-import MediaLibrary from 'expo-media-library'; // Импорт библиотеки для работы с галереей
+import * as ImagePicker from 'expo-image-picker';
+import * as MediaLibrary from 'expo-media-library'; // Импорт библиотеки для работы с галереей
 import { captureRef } from 'react-native-view-shot'; // Импорт утилиты для скриншотов
 
 // Импортируем компоненты
