@@ -1,9 +1,10 @@
 import { useState, useRef } from 'react';
-import { StyleSheet, View, Image, Text } from 'react-native';
+import { StyleSheet, View, Image, Text, Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library'; // Импорт библиотеки для работы с галереей
 import { captureRef } from 'react-native-view-shot'; // Импорт утилиты для скриншотов
+import domtoimage from 'dom-to-image';
 
 // Импортируем компоненты
 import Button from '../../components/Button';
@@ -42,28 +43,44 @@ export default function IndexScreen() {
   };
 
   // Исправленная и безопасная функция сохранения для веб-версии
-  const onSaveImageAsync = async () => {
-    try {
-      // Запрашиваем права асинхронно прямо внутри клика, а не при монтировании экрана
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-      
-      if (status !== 'granted') {
-        alert('Извините, нужны права на сохранение фото!');
-        return;
+    const onSaveImageAsync = async () => {
+    if (Platform.OS !== 'web') {
+      try {
+        const { status } = await MediaLibrary.requestPermissionsAsync();
+
+        if (status !== 'granted') {
+          alert('Извините, нужны права на сохранение фото!');
+          return;
+        }
+
+        const localUri = await captureRef(imageRef.current, {
+          height: 440,
+          quality: 1,
+        });
+
+        await MediaLibrary.saveToLibraryAsync(localUri);
+        alert('Изображение успешно сохранено в галерею!');
+      } catch (e) {
+        console.log(e);
       }
+    } else {
+      try {
+        const dataUrl = await domtoimage.toJpeg(imageRef.current, {
+          quality: 0.95,
+          width: 320,
+          height: 440,
+        });
 
-      const localUri = await captureRef(imageRef.current, {
-        height: 440,
-        quality: 1,
-      });
-
-      await MediaLibrary.saveToLibraryAsync(localUri);
-      alert('Изображение успешно сохранено в галерею!');
-    } catch (e) {
-      console.log(e);
-      alert('Не удалось сохранить изображение в веб-версии (требуется симулятор или телефон).');
+        let link = document.createElement('a');
+        link.download = 'sticker-smash.jpeg';
+        link.href = dataUrl;
+        link.click();
+      } catch (e) {
+        console.log(e);
+      }
     }
   };
+
 
   return (
     <GestureHandlerRootView style={styles.container}>
